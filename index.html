@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07131d">
+  <title>El camino de la investigación - FERIA CSH UNSAM</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%AC%3C/text%3E%3C/svg%3E">
+
+  <meta property="og:title" content="El camino de la investigación - FERIA CSH UNSAM">
+  <meta property="og:description" content="Recorré el camino de la investigación en la Feria de Ciencias Sociales y Humanas de la UNSAM.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://caminoinvestigacion-feriachs.github.io/">
+  <meta property="og:image" content="https://caminoinvestigacion-feriachs.github.io/EL%20CAMINO%20DE%20LA%20INVESTIGACION-TITULO.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="El camino de la investigación - FERIA CSH UNSAM">
+  <meta name="twitter:description" content="Recorré el camino de la investigación en la Feria de Ciencias Sociales y Humanas de la UNSAM.">
+  <meta name="twitter:image" content="https://caminoinvestigacion-feriachs.github.io/EL%20CAMINO%20DE%20LA%20INVESTIGACION-TITULO.png">
+  <style>
+    @font-face { font-family: "Faustina"; src: url("assets/fonts/faustina/Faustina-Regular.ttf") format("truetype"); font-weight: 400; }
+    @font-face { font-family: "Faustina"; src: url("assets/fonts/faustina/Faustina-SemiBold.ttf") format("truetype"); font-weight: 600; }
+    @font-face { font-family: "Faustina"; src: url("assets/fonts/faustina/Faustina-Bold.ttf") format("truetype"); font-weight: 700 900; }
+    * { box-sizing: border-box; }
+    body, button, a, input, output, select, textarea { font-family: "Faustina", serif !important; }
+    html, body { margin: 0; width: 100%; min-height: 100%; }
+    body {
+      min-height: 100dvh;
+      overflow: hidden;
+      background: #07131d;
+      font-family: "Faustina", serif;
+    }
+    .portal {
+      position: relative;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .portal-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      animation: portal-breath 12s ease-in-out infinite alternate;
+      transform-origin: center;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .portal::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(4, 10, 18, .32), transparent 28%, transparent 68%, rgba(4, 10, 18, .7));
+    }
+    .portal-brand {
+      position: absolute;
+      z-index: 2;
+      top: max(18px, env(safe-area-inset-top, 0px));
+      left: 50%;
+      width: clamp(220px, 25vw, 390px);
+      max-height: 14vh;
+      object-fit: contain;
+      transform: translateX(-50%);
+      border-radius: 8px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+    }
+    .version-actions {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      bottom: max(30px, calc(env(safe-area-inset-bottom, 0px) + 18px));
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      gap: clamp(14px, 2vw, 28px);
+      width: min(92vw, 850px);
+    }
+    .hotspot {
+      min-height: 68px;
+      flex: 1 1 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 24px;
+      border: 2px solid #00efff;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(0, 192, 202, .96), rgba(0, 91, 211, .96));
+      color: #fff;
+      text-decoration: none;
+      text-transform: uppercase;
+      text-align: center;
+      font-size: clamp(18px, 2vw, 26px);
+      font-weight: 800;
+      letter-spacing: .03em;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, .5);
+      cursor: pointer;
+      touch-action: manipulation;
+      box-shadow: 0 0 22px rgba(0, 238, 255, .5), 0 10px 24px rgba(0, 0, 0, .35);
+      transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+    }
+    .hotspot:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.08);
+      box-shadow: 0 0 32px rgba(0, 238, 255, .8), 0 14px 28px rgba(0, 0, 0, .45);
+    }
+    .hotspot:focus-visible {
+      outline: 4px solid #fff;
+      outline-offset: 4px;
+      background: rgba(255, 255, 255, .12);
+    }
+    .loading {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      display: grid;
+      place-items: center;
+      background: #07131d;
+      color: #fff;
+      font-weight: 700;
+      transition: opacity .25s ease;
+    }
+    .loading.hidden { opacity: 0; pointer-events: none; }
+    .transport-choice {
+      position: fixed;
+      inset: 0;
+      z-index: 6;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(4, 10, 18, .64);
+      backdrop-filter: blur(14px) saturate(.72);
+    }
+    .transport-choice[hidden] { display: none; }
+    .transport-panel {
+      position: relative;
+      width: min(760px, 94vw);
+      border: 2px solid rgba(0, 239, 255, .72);
+      border-radius: 26px;
+      padding: clamp(30px, 5vw, 56px);
+      background: linear-gradient(145deg, rgba(4, 24, 37, .97), rgba(6, 50, 70, .92));
+      color: #fff;
+      text-align: center;
+      box-shadow: 0 0 44px rgba(0, 238, 255, .28), 0 28px 90px rgba(0, 0, 0, .58);
+    }
+    .transport-kicker {
+      display: block;
+      color: #7ffaff;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .2em;
+    }
+    .transport-panel h1 {
+      margin: 12px auto 8px;
+      max-width: 650px;
+      font-size: clamp(28px, 5vw, 48px);
+      line-height: 1.05;
+    }
+    .transport-device {
+      margin: 0 0 28px;
+      color: rgba(255, 255, 255, .78);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .transport-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .transport-option {
+      min-height: 112px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #00efff;
+      border-radius: 20px;
+      padding: 18px;
+      color: #fff;
+      text-decoration: none;
+      font-size: clamp(24px, 4vw, 34px);
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .58);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, .32);
+      transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
+    }
+    .transport-option.terrestrial {
+      background: linear-gradient(135deg, #00a66a, #006f78);
+    }
+    .transport-option.aerial {
+      background: linear-gradient(135deg, #078bd5, #3448c5);
+    }
+    .transport-option:hover,
+    .transport-option:focus-visible {
+      transform: translateY(-3px);
+      filter: brightness(1.12);
+      box-shadow: 0 0 32px rgba(0, 238, 255, .64), 0 15px 34px rgba(0, 0, 0, .42);
+    }
+    .transport-back {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      min-height: 42px;
+      border: 1px solid rgba(255, 255, 255, .72);
+      border-radius: 999px;
+      padding: 8px 15px;
+      background: rgba(3, 17, 25, .78);
+      color: #fff;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      cursor: pointer;
+    }
+    @media (orientation: portrait) {
+      .portal-image { object-fit: contain; }
+      .portal-brand {
+        top: max(16px, calc(env(safe-area-inset-top, 0px) + 8px));
+        width: min(76vw, 360px);
+      }
+      .version-actions {
+        bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+        flex-direction: column;
+        width: min(88vw, 430px);
+        gap: 12px;
+      }
+      .hotspot {
+        min-height: 58px;
+        padding: 12px 18px;
+        font-size: 18px;
+      }
+      .transport-choice { padding: 14px; }
+      .transport-panel {
+        width: min(92vw, 430px);
+        border-radius: 22px;
+        padding: 76px 18px 24px;
+      }
+      .transport-panel h1 { font-size: clamp(27px, 8vw, 38px); }
+      .transport-device { margin-bottom: 20px; font-size: 13px; }
+      .transport-actions { grid-template-columns: 1fr; gap: 12px; }
+      .transport-option { min-height: 68px; font-size: 24px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hotspot, .loading { transition: none; }
+    }
+    .music-control {
+      position: fixed;
+      right: max(18px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid rgba(255,255,255,.76);
+      border-radius: 999px;
+      padding: 7px 11px 7px 7px;
+      background: rgba(3,12,18,.86);
+      box-shadow: 0 0 24px rgba(0,239,255,.28);
+      backdrop-filter: blur(12px);
+    }
+    @keyframes portal-breath {
+      from { transform: scale(1); }
+      to { transform: scale(1.025); }
+    }
+    @media (prefers-reduced-motion: reduce) { .portal-image { animation: none; } }
+    .music-toggle {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#00c6ff,#4455ff);
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .music-volume { width: 105px; accent-color: #00eaff; cursor: pointer; }
+    .music-control label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  </style>
+</head>
+<body>
+  <main class="portal" aria-label="Seleccionar versión del recorrido">
+    <img
+      id="portal-image"
+      class="portal-image"
+      src="CIENCIA Y FICCION.png"
+      alt="Ciencia y Ficción, XI edición 2026."
+    >
+    <img class="portal-brand" src="assets/feria-ciencias-humanas-sociales-logo.png" alt="Feria de Ciencias Humanas y Sociales">
+    <nav class="version-actions" aria-label="Elegir versión de la experiencia">
+      <a class="hotspot hotspot-mobile" href="mobile.html?device=mobile" data-device="mobile" aria-label="Ingresar al recorrido desde un dispositivo móvil">
+        Versión móvil
+      </a>
+      <a class="hotspot hotspot-desktop" href="desktop.html?device=desktop" data-device="desktop" aria-label="Ingresar al recorrido desde una computadora">
+        Versión escritorio
+      </a>
+    </nav>
+  </main>
+  <section id="transport-choice" class="transport-choice" role="dialog" aria-modal="true" aria-labelledby="transport-title" aria-hidden="true" hidden>
+    <div class="transport-panel">
+      <button id="transport-back" class="transport-back" type="button">← VOLVER</button>
+      <span class="transport-kicker">EL CAMINO DE LA INVESTIGACIÓN</span>
+      <h1 id="transport-title">¿Por qué medio querés hacer este recorrido?</h1>
+      <p id="transport-device" class="transport-device"></p>
+      <div class="transport-actions">
+        <a id="terrestrial-option" class="transport-option terrestrial" href="mobile.html">TERRESTRE</a>
+        <a id="aerial-option" class="transport-option aerial" href="aereo/">AÉREO</a>
+      </div>
+    </div>
+  </section>
+  <div class="music-control" aria-label="Control de música de fondo">
+    <button id="music-toggle" class="music-toggle" type="button" aria-pressed="false" aria-label="Silenciar música">🔊</button>
+    <label for="music-volume">Volumen</label>
+    <input id="music-volume" class="music-volume" type="range" min="0" max="1" step="0.05" value="0.35" aria-label="Volumen de la música">
+  </div>
+  <audio id="portal-music" src="assets/audio/Noche_de_Tablado.mp3" preload="auto" loop></audio>
+  <div class="loading" id="loading" role="status">Preparando la portada…</div>
+  <script>
+    (() => {
+      const image = document.getElementById('portal-image');
+      const loading = document.getElementById('loading');
+      const transportChoice = document.getElementById('transport-choice');
+      const transportDevice = document.getElementById('transport-device');
+      const terrestrialOption = document.getElementById('terrestrial-option');
+      const aerialOption = document.getElementById('aerial-option');
+      const transportBack = document.getElementById('transport-back');
+      const portalMusic = document.getElementById('portal-music');
+      const musicToggle = document.getElementById('music-toggle');
+      const musicVolume = document.getElementById('music-volume');
+      const versionLinks = [...document.querySelectorAll('[data-device]')];
+      let selectedVersionLink = null;
+      let previousVolume = 0.35;
+
+      portalMusic.volume = previousVolume;
+      const updateMusicControl = () => {
+        const muted = portalMusic.muted || portalMusic.volume === 0;
+        musicToggle.textContent = muted ? '🔇' : '🔊';
+        musicToggle.setAttribute('aria-pressed', String(muted));
+        musicToggle.setAttribute('aria-label', muted ? 'Activar música' : 'Silenciar música');
+      };
+      const tryPlayMusic = () => portalMusic.play().catch(() => {});
+      const unlockMusic = () => {
+        tryPlayMusic();
+        document.removeEventListener('pointerdown', unlockMusic);
+        document.removeEventListener('keydown', unlockMusic);
+      };
+      document.addEventListener('pointerdown', unlockMusic);
+      document.addEventListener('keydown', unlockMusic);
+      tryPlayMusic();
+
+      musicToggle.addEventListener('click', () => {
+        if (portalMusic.paused) {
+          portalMusic.muted = false;
+          portalMusic.volume = previousVolume || 0.35;
+          musicVolume.value = String(portalMusic.volume);
+          tryPlayMusic();
+        } else if (portalMusic.muted || portalMusic.volume === 0) {
+          portalMusic.muted = false;
+          portalMusic.volume = previousVolume || 0.35;
+          musicVolume.value = String(portalMusic.volume);
+          tryPlayMusic();
+        } else {
+          previousVolume = portalMusic.volume;
+          portalMusic.muted = true;
+        }
+        updateMusicControl();
+      });
+
+      musicVolume.addEventListener('input', () => {
+        const volume = Number(musicVolume.value);
+        portalMusic.volume = volume;
+        portalMusic.muted = volume === 0;
+        if (volume > 0) previousVolume = volume;
+        tryPlayMusic();
+        updateMusicControl();
+      });
+
+      [terrestrialOption, aerialOption].forEach(option => option.addEventListener('click', () => portalMusic.pause()));
+
+      const showTransportChoice = (device, sourceLink) => {
+        selectedVersionLink = sourceLink;
+        const isMobile = device === 'mobile';
+        transportDevice.textContent = isMobile ? 'VERSIÓN MÓVIL' : 'VERSIÓN ESCRITORIO';
+
+        const terrestrialUrl = new URL(isMobile ? 'mobile.html' : 'desktop.html', window.location.href);
+        terrestrialUrl.searchParams.set('device', device);
+        terrestrialOption.href = terrestrialUrl.href;
+
+        const aerialUrl = new URL('aereo/', window.location.href);
+        aerialUrl.searchParams.set('device', device);
+        aerialUrl.searchParams.set('source', 'comocreamos');
+        aerialOption.href = aerialUrl.href;
+
+        transportChoice.hidden = false;
+        transportChoice.setAttribute('aria-hidden', 'false');
+        terrestrialOption.focus();
+      };
+
+      versionLinks.forEach(link => link.addEventListener('click', event => {
+        event.preventDefault();
+        showTransportChoice(link.dataset.device, link);
+      }));
+
+      transportBack.addEventListener('click', () => {
+        transportChoice.hidden = true;
+        transportChoice.setAttribute('aria-hidden', 'true');
+        selectedVersionLink?.focus();
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !transportChoice.hidden) transportBack.click();
+      });
+
+      const entryParams = new URLSearchParams(window.location.search);
+      const requestedDevice = entryParams.get('device');
+      if (entryParams.get('choose') === 'transport' && ['mobile', 'desktop'].includes(requestedDevice)) {
+        const requestedLink = versionLinks.find(link => link.dataset.device === requestedDevice);
+        showTransportChoice(requestedDevice, requestedLink || null);
+      }
+
+      const finish = () => loading.classList.add('hidden');
+      if (image.complete) finish();
+      else {
+        image.addEventListener('load', finish, { once: true });
+        image.addEventListener('error', finish, { once: true });
+      }
+    })();
+  </script>
+</body>
+</html>

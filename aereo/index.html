@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Recorrido aéreo 3D por nueve etapas del camino de la investigación.">
+  <title>Aéreo San Martín 2026</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%88%EF%B8%8F%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css">
+  <link rel="preload" as="image" href="assets/intro-plates/intro-01.webp">
+  <link rel="preload" as="image" href="assets/intro-plates/intro-02.webp">
+  <link rel="stylesheet" href="styles.css?v=faustina-layout-8">
+</head>
+<body>
+  <div id="experienceSetup" class="experience-setup" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+    <div id="modeChoice" class="setup-card">
+      <span class="setup-kicker">ANTES DE COMENZAR</span>
+      <h1 id="setupTitle">¿Cómo vas a realizar el recorrido?</h1>
+      <div class="setup-actions">
+        <button id="mobileModeBtn" type="button">VERSIÓN MÓVIL</button>
+        <button id="desktopModeBtn" type="button">ESCRITORIO PC</button>
+      </div>
+    </div>
+    <div id="orientationPrompt" class="setup-card orientation-card" hidden>
+      <div class="orientation-icon" aria-hidden="true">↻ ▭</div>
+      <h1>Giralo para ver mejor</h1>
+      <p>Te sugerimos colocar el celular en posición horizontal para mejorar la experiencia.</p>
+      <button id="continueMobileBtn" type="button">CONTINUAR</button>
+    </div>
+  </div>
+  <section id="journeyIntro" class="journey-intro" role="dialog" aria-modal="true" aria-labelledby="journeyIntroTitle" aria-hidden="true" hidden>
+    <div class="journey-intro-shell">
+      <header class="journey-intro-header">
+        <span>ANTES DE INICIAR EL VUELO</span>
+        <a id="journeyIntroBack" href="../?choose=transport">← ELEGIR RECORRIDO</a>
+      </header>
+      <div class="journey-intro-content">
+        <figure class="journey-intro-map">
+          <img src="assets/intro/el-camino-de-la-investigacion.png" alt="Mapa ilustrado de las postas de El camino de la investigación">
+        </figure>
+        <article class="journey-intro-copy">
+          <h1 id="journeyIntroTitle">El camino de la investigación</h1>
+          <p>Te proponemos un recorrido interactivo por este mapa con postas y paradas para acompañarlas/os a la próxima edición de la Feria.</p>
+        </article>
+      </div>
+      <figure id="journeyIntroPlate" class="journey-intro-plate" hidden>
+        <img id="journeyIntroPlateImage" src="assets/intro-plates/intro-01.webp" alt="Información previa al inicio del recorrido, placa 1 de 2">
+      </figure>
+      <div class="journey-intro-actions">
+        <button id="journeyIntroPrevious" class="journey-intro-previous" type="button" hidden>← ANTERIOR</button>
+        <button id="journeyIntroContinue" class="journey-intro-continue" type="button">SIGUIENTE →</button>
+      </div>
+    </div>
+  </section>
+  <main id="map" aria-label="Recorrido aéreo 3D por el Partido de General San Martín"></main>
+  <section class="hud">
+    <button id="stopMaterialBtn" class="stop-material-trigger" type="button" aria-label="Abrir materiales de la Posta 1">
+      <span id="stopName" class="stop-name">POSTA 1</span>
+      <span id="stopTheme" class="stop-theme">PUNTO DE PARTIDA</span>
+      <small>(HACÉ CLICK AQUÍ)</small>
+    </button>
+    <p id="stopMeta" hidden></p>
+    <div id="fairCountdown" class="fair-countdown" aria-live="polite">
+      <span class="countdown-heading">FALTAN:</span>
+      <div class="countdown-values">
+        <span class="countdown-unit days"><strong id="countdownDays">--</strong><small>DÍAS</small></span>
+        <b aria-hidden="true">:</b>
+        <span class="countdown-unit hours"><strong id="countdownHours">--</strong><small>HORAS</small></span>
+        <b aria-hidden="true">:</b>
+        <span class="countdown-unit minutes"><strong id="countdownMinutes">--</strong><small>MINS</small></span>
+      </div>
+      <span class="countdown-month">PARA OCTUBRE</span>
+    </div>
+  </section>
+  <div class="controls">
+    <div class="journey-control-cluster">
+      <div class="control-group flight-controls">
+        <button id="startBtn" type="button" class="primary" aria-pressed="false">INICIAR</button>
+      </div>
+      <div class="control-group step-controls">
+        <button id="prevStopBtn" type="button" class="step-control" disabled>← RETROCEDER</button>
+        <button id="nextStopBtn" type="button" class="step-control">AVANZAR →</button>
+      </div>
+    </div>
+    <div class="control-group utility-controls">
+      <button id="mapModeBtn" type="button" aria-pressed="false" aria-label="Usar vista satelital" disabled>SATÉLITE</button>
+      <button id="restartBtn" type="button">REINICIAR</button>
+    </div>
+  </div>
+  <nav id="routeNav" class="route-nav" aria-label="Etapas del recorrido"></nav>
+  <div class="top-tools">
+    <button id="chooseExperienceBtn" class="choose-experience-control" type="button">← ELEGIR RECORRIDO</button>
+    <img class="project-title-badge" src="assets/ui/el-camino-investigacion.png" alt="¿Cómo creamos? El camino de la investigación">
+    <button id="fullscreenBtn" class="fullscreen-control" type="button" aria-pressed="false">
+      <span aria-hidden="true">⛶</span><span id="fullscreenLabel">PANTALLA COMPLETA</span>
+    </button>
+    <div class="altimeter"><span>ALT</span><strong id="altitude">0 m</strong></div>
+  </div>
+  <div id="status" class="status" role="status" aria-live="polite">Preparando aeronave…</div>
+  <div id="postaImpact" class="posta-impact" aria-hidden="true">
+    <div id="postaImpactParticles" class="posta-impact-particles" aria-hidden="true"></div>
+    <strong id="postaImpactLabel" class="posta-impact-label">POSTA 1</strong>
+  </div>
+  <div id="celebration" class="celebration" aria-hidden="true">
+    <div id="confetti" class="confetti" aria-hidden="true"></div>
+    <div class="completion-card" role="status">
+      <strong>¡RECORRIDO COMPLETADO!</strong>
+      <a class="completion-download" href="./assets/pdfs/Recorrido-completo-El-camino-de-la-investigacion.pdf" download>⇩ DESCARGAR RECORRIDO COMPLETO</a>
+    </div>
+  </div>
+  <button id="freeModeBtn" class="free-mode-entry" type="button" hidden>ZEPELÍN: MODO LIBRE</button>
+  <a id="completePdfBtn" class="complete-pdf-entry" href="./assets/pdfs/Recorrido-completo-El-camino-de-la-investigacion.pdf" download hidden>⇩ DESCARGAR PDF COMPLETO</a>
+  <section id="freeFlightControls" class="free-flight-controls" aria-label="Controles del modo libre" hidden>
+    <div class="free-flight-heading">
+      <strong>ZEPELÍN · MODO LIBRE</strong>
+      <span class="desktop-flight-help">FLECHAS: AVANZAR, RETROCEDER Y GIRAR</span>
+      <span class="mobile-flight-help">MOVÉ EL CONTROL CIRCULAR PARA PILOTEAR</span>
+    </div>
+    <div id="freeJoystick" class="free-joystick" role="application" aria-label="Control táctil del zepelín">
+      <div id="freeJoystickKnob" class="free-joystick-knob"></div>
+    </div>
+    <div class="free-speed-control" aria-label="Velocidad del zepelín">
+      <button id="freeSlowerBtn" type="button" aria-label="Reducir velocidad">−</button>
+      <output id="freeSpeedOutput">60 KM/H</output>
+      <button id="freeFasterBtn" type="button" aria-label="Aumentar velocidad">+</button>
+    </div>
+    <button id="exitFreeModeBtn" class="exit-free-mode" type="button">SALIR DEL MODO LIBRE</button>
+  </section>
+  <div id="materialOverlay" class="material-overlay" role="dialog" aria-modal="true" aria-labelledby="materialTitle" aria-hidden="true">
+    <section class="material-panel">
+      <button id="closeMaterialBtn" class="material-close" type="button">✕ CERRAR Y CONTINUAR</button>
+      <a id="materialDownloadLink" class="material-download" href="#" download>⇩ DESCARGAR PDF</a>
+      <h2 id="materialTitle">POSTA 1</h2>
+      <div id="materialBody" class="material-body"></div>
+    </section>
+  </div>
+  <a id="satelliteCredit" class="satellite-credit" href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" target="_blank" rel="noopener">IMÁGENES © ESRI Y PROVEEDORES</a>
+  <a class="airship-credit" href="https://github.com/C2DH/zoomland" target="_blank" rel="license noopener">AIRSHIP · C2DH/ZOOMLAND · AGPL-3.0</a>
+  <noscript>Esta experiencia necesita JavaScript para mostrar el mapa y el recorrido 3D.</noscript>
+  <script src="boot.js"></script>
+  <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.178.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module" src="app.js?v=32"></script>
+</body>
+</html>
