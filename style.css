@@ -969,7 +969,8 @@ button,
 /* Botón trigger de reinicio (aparece al llegar a Posta 9) */
 .restart-trigger-btn {
     position: fixed;
-    bottom: 80px;
+    /* Encima de la columna SIGUIENTE / ATRÁS / SALTAR, sin superponerla. */
+    bottom: 284px;
     right: 20px;
     z-index: 7000;
     padding: 12px 20px;
@@ -1059,6 +1060,10 @@ button,
         gap: 6px !important;
     }
     #screen-3 .map-nav .nav-btn { min-height: 44px; padding: 8px 9px; font-size: 12px; letter-spacing: .5px; }
+    #screen-3 .restart-trigger-btn {
+        bottom: calc(244px + env(safe-area-inset-bottom, 0px));
+        right: calc(8px + env(safe-area-inset-right, 0px));
+    }
 }
 .complete-pdf-download {
     display: inline-grid;
