@@ -159,6 +159,9 @@ button,
     padding: 10px 12px;
     font-size: 15px;
 }
+#btn-next-3 {
+    background: linear-gradient(45deg, #0f0, #00a);
+}
 .terrestrial-route-nav {
     position: absolute;
     left: 12px;
