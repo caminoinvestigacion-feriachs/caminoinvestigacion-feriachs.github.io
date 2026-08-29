@@ -194,6 +194,58 @@ const exitFreeModeBtn = $('#exitFreeModeBtn');
 const postaImpact = $('#postaImpact');
 const postaImpactParticles = $('#postaImpactParticles');
 const postaImpactLabel = $('#postaImpactLabel');
+const journeyAudioToggle = $('#journeyAudioToggle');
+const journeyAudioVolume = $('#journeyAudioVolume');
+const airshipMovementAudio = new Audio('../assets/audio/mixkit-city-bus-departure-3034.wav');
+const airshipImpactAudio = new Audio('../assets/audio/mixkit-sci-fi-click-900.wav');
+let journeySoundVolume = 0.22;
+let journeySoundMuted = false;
+let journeyPreviousVolume = journeySoundVolume;
+
+airshipMovementAudio.loop = true;
+airshipMovementAudio.preload = 'auto';
+airshipImpactAudio.preload = 'auto';
+
+function applyJourneySoundVolume() {
+  const base = journeySoundMuted ? 0 : journeySoundVolume;
+  airshipMovementAudio.volume = Math.min(1, base * 0.58);
+  airshipImpactAudio.volume = Math.min(1, base * 1.75);
+  journeyAudioToggle.textContent = base === 0 ? '🔇' : '🔊';
+  journeyAudioToggle.setAttribute('aria-pressed', String(base === 0));
+  journeyAudioToggle.setAttribute('aria-label', base === 0 ? 'Activar sonidos' : 'Silenciar sonidos');
+}
+
+function setAirshipMovementSound(playing) {
+  if (!playing || journeySoundMuted || journeySoundVolume === 0) {
+    airshipMovementAudio.pause();
+    return;
+  }
+  if (airshipMovementAudio.paused) airshipMovementAudio.play().catch(() => {});
+}
+
+function playAirshipImpactSound() {
+  airshipImpactAudio.pause();
+  airshipImpactAudio.currentTime = 0;
+  if (!journeySoundMuted && journeySoundVolume > 0) airshipImpactAudio.play().catch(() => {});
+}
+
+journeyAudioToggle.addEventListener('click', () => {
+  journeySoundMuted = !journeySoundMuted;
+  if (!journeySoundMuted && journeySoundVolume === 0) {
+    journeySoundVolume = journeyPreviousVolume || 0.22;
+    journeyAudioVolume.value = String(journeySoundVolume);
+  }
+  applyJourneySoundVolume();
+  setAirshipMovementSound(flightState === 'playing' || flightState === 'free');
+});
+journeyAudioVolume.addEventListener('input', () => {
+  journeySoundVolume = Number(journeyAudioVolume.value);
+  journeySoundMuted = journeySoundVolume === 0;
+  if (journeySoundVolume > 0) journeyPreviousVolume = journeySoundVolume;
+  applyJourneySoundVolume();
+  setAirshipMovementSound(flightState === 'playing' || flightState === 'free');
+});
+applyJourneySoundVolume();
 
 let flightState = 'ready';
 let flightStage = 'departure';
@@ -482,6 +534,7 @@ function cancelPostaImpact() {
 function triggerPostaImpact(index) {
   window.clearTimeout(postaImpactHideTimer);
   const stop = STOPS[index];
+  playAirshipImpactSound();
   const color = POSTA_COLORS[index];
   const projected = map.project([stop.lng, stop.lat]);
   const target = stopMaterialBtn.getBoundingClientRect();
@@ -613,6 +666,7 @@ function openMaterial(index = currentStopIndex) {
   if (flightState === 'playing') {
     pausedAt = performance.now();
     cancelAnimation();
+    setAirshipMovementSound(false);
   }
   flightState = 'material';
   renderMaterial(index);
@@ -1011,6 +1065,7 @@ function bindCameraOrbitControls() {
 function stopAtPost(index) {
   cancelAnimation();
   flightState = 'stopped';
+  setAirshipMovementSound(false);
   planeState = { ...planeState, throttle: 0.28, bank: 0, pitch: 0 };
   triggerPostaImpact(index);
   setFlightButton('CONTINUAR');
@@ -1021,6 +1076,7 @@ function stopAtPost(index) {
 function completeFlight() {
   cancelAnimation();
   flightState = 'completed';
+  setAirshipMovementSound(false);
   planeState = { ...planeState, throttle: 0.28, bank: 0, pitch: 0 };
   setFlightButton('VOLVER A VOLAR');
   setStatus('Recorrido completo · Conclusiones · UNSAM');
@@ -1107,6 +1163,7 @@ function enterFreeFlight() {
   cancelCelebration();
   resetFreeFlightInput();
   flightState = 'free';
+  setAirshipMovementSound(true);
   flightStage = 'route';
   planeState = {
     ...planeState,
@@ -1132,6 +1189,7 @@ function exitFreeFlight() {
   cancelAnimation();
   resetFreeFlightInput();
   flightState = 'completed';
+  setAirshipMovementSound(false);
   planeState = { ...planeState, throttle: 0.28, bank: 0, pitch: 0 };
   freeFlightControls.hidden = true;
   freeModeBtn.hidden = false;
@@ -1256,6 +1314,7 @@ function resumeFlight(fromStop = false) {
   else segmentStart = now;
   pausedAt = 0;
   flightState = 'playing';
+  setAirshipMovementSound(true);
   planeState = { ...planeState, throttle: Math.max(0.72, planeState.throttle ?? 0) };
   setFlightButton('PAUSA');
   setStatus(flightStage === 'departure'
@@ -1269,6 +1328,7 @@ function resumeFlight(fromStop = false) {
 
 function pauseFlight() {
   flightState = 'paused';
+  setAirshipMovementSound(false);
   pausedAt = performance.now();
   cancelAnimation();
   planeState = { ...planeState, throttle: 0.28 };
@@ -1300,6 +1360,7 @@ function start() {
 
 function reset(animateMap = true) {
   cancelAnimation();
+  setAirshipMovementSound(false);
   cancelCelebration();
   cancelPostaImpact();
   impactedPostas.clear();

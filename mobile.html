@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://server.arcgisonline.com" crossorigin>
-    <link rel="stylesheet" href="style.css?v=55">
+    <link rel="stylesheet" href="style.css?v=56">
     <link rel="stylesheet" href="mobile-accessibility.css?v=11">
     <link rel="preload" as="image" href="CIENCIA Y FICCION.png" fetchpriority="high">
     <link rel="preload" as="image" href="assets/feria-fondo.jpg">
@@ -30,6 +30,11 @@
     <div id="train-editor-overlay" class="hidden"><div class="editor-panel"><h2>Editor de Tren</h2><div class="editor-controls"><label>Tamaño del Tren: <span id="train-size-val">250px</span></label><input type="range" id="train-size" min="100" max="1000" value="250"><label>Rotación del Tren: <span id="train-rot-val">0°</span></label><input type="range" id="train-rot" min="-180" max="180" value="0"><p style="font-size:12px;margin-top:10px;color:#ccc;">* Arrastra las 3 aspas de colores para ubicarlas en las ruedas.</p></div><div class="editor-canvas-container"><div id="editor-canvas"><img src="tren_transparente.png" id="editor-train-img" alt="Vista previa del tren"><div class="draggable-wheel" id="wheel-1"><img src="ASPAS FERIA.svg" class="spin-wheel" alt=""></div><div class="draggable-wheel" id="wheel-2"><img src="ASPAS FERIA.svg" class="spin-wheel" alt=""></div><div class="draggable-wheel" id="wheel-3"><img src="ASPAS FERIA.svg" class="spin-wheel" alt=""></div></div></div><div class="editor-buttons" style="display:none;"><button id="btn-save-train" class="nav-btn">Guardar</button><button id="btn-cancel-train" class="nav-btn btn-back">Cancelar</button></div><button id="btn-close-train-editor" class="nav-btn" style="width:100%;margin-top:15px;background:linear-gradient(45deg,#0ff,#00f);">✕ Cerrar y guardar</button></div></div>
     <button id="btn-fullscreen" onclick="(function(){if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen();})()">⛶ Pantalla completa</button>
     <a id="btn-main-menu" href="index.html?choose=transport" aria-label="Volver a elegir el medio del recorrido">← Elegir recorrido</a>
+    <div class="journey-audio-control" aria-label="Control de sonido del recorrido">
+        <button id="journey-audio-toggle" type="button" aria-pressed="false" aria-label="Silenciar sonidos">🔊</button>
+        <label for="journey-audio-volume">Volumen</label>
+        <input id="journey-audio-volume" type="range" min="0" max="0.65" step="0.05" value="0.22" aria-label="Volumen de los sonidos del recorrido">
+    </div>
     <script>
         (() => {
             const overlay = document.getElementById('orientation-suggestion');
@@ -54,6 +59,6 @@
             else landscape.addListener(handleOrientation);
         })();
     </script>
-    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script><script src="https://unpkg.com/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script><script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script><script src="data.js?v=36"></script><script src="localidades-san-martin-shp.js?v=36"></script><script src="mobile-performance.js?v=5"></script><script src="script.js?v=57"></script>
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><script src="https://unpkg.com/three@0.147.0/build/three.min.js"></script><script src="https://unpkg.com/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script><script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script><script src="data.js?v=36"></script><script src="localidades-san-martin-shp.js?v=36"></script><script src="mobile-performance.js?v=5"></script><script src="script.js?v=58"></script>
 </body>
 </html>

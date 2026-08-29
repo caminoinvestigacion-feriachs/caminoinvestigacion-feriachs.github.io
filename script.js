@@ -12,6 +12,74 @@ document.addEventListener('DOMContentLoaded', () => {
     const preloadStatus = document.getElementById('preload-status');
     const DEPOT3_VERTICAL_OFFSET = 52;
 
+    const journeyAudioToggle = document.getElementById('journey-audio-toggle');
+    const journeyAudioVolume = document.getElementById('journey-audio-volume');
+    const busMovementAudio = new Audio('assets/audio/mixkit-train-passenger-passing-by-rattle-1636.wav');
+    const trainMovementAudio = new Audio('assets/audio/mixkit-steam-train-passing-1630.wav');
+    const busArrivalAudio = new Audio('assets/audio/mixkit-hydraulic-bus-door-2709.wav');
+    const trainArrivalAudio = new Audio('assets/audio/mixkit-steam-train-passing-1630.wav');
+    const journeyAudioTracks = [busMovementAudio, trainMovementAudio, busArrivalAudio, trainArrivalAudio];
+    let journeySoundVolume = 0.22;
+    let journeySoundMuted = false;
+    let journeyPreviousVolume = journeySoundVolume;
+
+    busMovementAudio.loop = true;
+    trainMovementAudio.loop = true;
+    journeyAudioTracks.forEach(audio => { audio.preload = 'auto'; });
+
+    function applyJourneySoundVolume() {
+        const base = journeySoundMuted ? 0 : journeySoundVolume;
+        busMovementAudio.volume = Math.min(1, base * 0.62);
+        trainMovementAudio.volume = Math.min(1, base * 0.62);
+        busArrivalAudio.volume = Math.min(1, base * 0.92);
+        trainArrivalAudio.volume = Math.min(1, base * 0.88);
+        journeyAudioToggle.textContent = base === 0 ? '🔇' : '🔊';
+        journeyAudioToggle.setAttribute('aria-pressed', String(base === 0));
+        journeyAudioToggle.setAttribute('aria-label', base === 0 ? 'Activar sonidos' : 'Silenciar sonidos');
+    }
+
+    function stopAudio(audio, rewind = false) {
+        audio.pause();
+        if (rewind) audio.currentTime = 0;
+    }
+
+    function setJourneyMovementSound(mode, playing) {
+        const active = mode === 'street' ? busMovementAudio : trainMovementAudio;
+        const inactive = mode === 'street' ? trainMovementAudio : busMovementAudio;
+        stopAudio(inactive);
+        if (!playing || journeySoundMuted || journeySoundVolume === 0) {
+            stopAudio(active);
+            return;
+        }
+        if (active.paused) active.play().catch(() => {});
+    }
+
+    function playVehicleArrivalSound(mode) {
+        const effect = mode === 'street' ? busArrivalAudio : trainArrivalAudio;
+        effect.pause();
+        effect.currentTime = 0;
+        if (!journeySoundMuted && journeySoundVolume > 0) effect.play().catch(() => {});
+    }
+
+    journeyAudioToggle.addEventListener('click', () => {
+        journeySoundMuted = !journeySoundMuted;
+        if (!journeySoundMuted && journeySoundVolume === 0) {
+            journeySoundVolume = journeyPreviousVolume || 0.22;
+            journeyAudioVolume.value = String(journeySoundVolume);
+        }
+        applyJourneySoundVolume();
+        if (isMoving) setJourneyMovementSound(currentPathIndex < 2 ? 'street' : 'train', true);
+        else if (journeySoundMuted) journeyAudioTracks.forEach(audio => stopAudio(audio));
+    });
+    journeyAudioVolume.addEventListener('input', () => {
+        journeySoundVolume = Number(journeyAudioVolume.value);
+        journeySoundMuted = journeySoundVolume === 0;
+        if (journeySoundVolume > 0) journeyPreviousVolume = journeySoundVolume;
+        applyJourneySoundVolume();
+        if (isMoving) setJourneyMovementSound(currentPathIndex < 2 ? 'street' : 'train', true);
+    });
+    applyJourneySoundVolume();
+
     const posta1Slides = [
         'assets/posta1-slides/slide-01.webp',
         'assets/posta1-slides/slide-02.webp'
@@ -1646,6 +1714,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function setVehiclePlayback(mode, playing) {
         const isBus = mode === 'street';
         const media = pinwheelDiv && pinwheelDiv.querySelector(isBus ? '.bus-image' : '.train-media-target');
+        setJourneyMovementSound(mode, playing);
         if (!media) return;
         setMediaPlayback(media, playing);
         media.closest('.train-container')?.classList.toggle('train-stopped', !playing);
@@ -2633,6 +2702,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         let frame = 0;
+        let arrivalSoundStarted = false;
 
         return new Promise((resolve) => {
             function animate() {
@@ -2657,12 +2727,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Hide inter-posta text on arrival
                     const _it = document.getElementById('inter-posta-text');
                     if (_it) _it.classList.remove('visible');
-                    if (mode === 'street' || mode === 'train') setVehiclePlayback(mode, false);
+                    if (mode === 'street' || mode === 'train') {
+                        setVehiclePlayback(mode, false);
+                        if (!arrivalSoundStarted) playVehicleArrivalSound(mode);
+                    }
                     resolve();
                     return;
                 }
                 
                 const progress = frame / totalFrames;
+                const arrivalThreshold = mode === 'train' ? 0.76 : 0.93;
+                if (!arrivalSoundStarted && (mode === 'street' || mode === 'train') && progress >= arrivalThreshold) {
+                    arrivalSoundStarted = true;
+                    playVehicleArrivalSound(mode);
+                }
                 const distAlong = distance * progress;
                 const point = turf.along(line, distAlong, { units: 'kilometers' });
                 const lng = point.geometry.coordinates[0];

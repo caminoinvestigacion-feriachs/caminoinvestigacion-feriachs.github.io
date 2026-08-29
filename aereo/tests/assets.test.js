@@ -400,3 +400,26 @@ test('el dirigible lleva publicidad en ambos laterales y admite cámara orbital'
   assert.match(source, /viewBearing = position\.bearing \+ cameraOrbit\.azimuth/);
   assert.match(source, /cameraOrbit = \{ \.\.\.CAMERA_ORBIT_DEFAULT \}/);
 });
+
+test('el recorrido aéreo sincroniza motor, impacto y control de volumen', async () => {
+  const [source, html] = await Promise.all([
+    readFile(new URL('../app.js', import.meta.url), 'utf8'),
+    readFile(new URL('../index.html', import.meta.url), 'utf8')
+  ]);
+  const audioFiles = [
+    '../../assets/audio/mixkit-city-bus-departure-3034.wav',
+    '../../assets/audio/mixkit-sci-fi-click-900.wav'
+  ];
+  for (const relativePath of audioFiles) {
+    const audio = await readFile(new URL(relativePath, import.meta.url));
+    assert.equal(audio.subarray(0, 4).toString('ascii'), 'RIFF');
+    assert.equal(audio.subarray(8, 12).toString('ascii'), 'WAVE');
+    assert.ok(audio.length > 100_000);
+  }
+  assert.match(html, /id="journeyAudioToggle"/);
+  assert.match(html, /id="journeyAudioVolume"[^>]*value="0\.22"/);
+  assert.match(source, /function setAirshipMovementSound\(playing\)/);
+  assert.match(source, /function playAirshipImpactSound\(\)/);
+  assert.match(source, /airshipImpactAudio\.volume = Math\.min\(1, base \* 1\.75\)/);
+  assert.match(source, /function triggerPostaImpact\(index\)[\s\S]*playAirshipImpactSound\(\)/);
+});

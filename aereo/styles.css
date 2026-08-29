@@ -1484,3 +1484,46 @@ html[data-experience-mode='mobile'] .exit-free-mode {
   .celebration.active .confetti i { animation-duration: 1.2s; }
   .celebration.active .completion-card { animation-duration: 3.5s; }
 }
+
+.journey-audio-control {
+  position: fixed;
+  top: 50%;
+  left: max(12px, env(safe-area-inset-left));
+  z-index: 8;
+  display: grid;
+  width: 48px;
+  justify-items: center;
+  gap: 7px;
+  transform: translateY(-50%);
+  border: 1px solid rgba(141, 233, 242, 0.74);
+  border-radius: 16px;
+  padding: 9px 7px;
+  background: rgba(4, 13, 19, 0.84);
+  box-shadow: 0 0 20px rgba(65, 210, 231, 0.3);
+  backdrop-filter: blur(10px);
+}
+.journey-audio-control button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #8de9f2;
+  border-radius: 50%;
+  background: rgba(6, 48, 61, 0.94);
+  color: #fff;
+  font-size: 19px;
+  cursor: pointer;
+}
+.journey-audio-control label {
+  font: 700 9px 'Faustina', sans-serif;
+  letter-spacing: .1em;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+.journey-audio-control input {
+  width: 82px;
+  height: 18px;
+  margin: 32px 0;
+  transform: rotate(-90deg);
+  accent-color: #8de9f2;
+  cursor: pointer;
+}
+body:has(.material-overlay.open) .journey-audio-control { visibility: hidden; }
