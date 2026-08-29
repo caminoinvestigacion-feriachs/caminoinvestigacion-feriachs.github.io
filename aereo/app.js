@@ -83,6 +83,7 @@ const POSTA_PDFS = new Map([
   [8, './assets/pdfs/Posta-7-Conclusiones.pdf']
 ]);
 const stopLabel = stop => stop.stageLabel || `POSTA ${stop.id}`;
+const stopMarkerLabel = (stop, index) => stop.markerLabel || String(index + 1);
 const stopSpokenLabel = stop => stop.stageLabel
   ? stop.stageLabel.replace('PARADA', 'Parada').replace('POSTA', 'Posta')
   : `Posta ${stop.id}`;
@@ -1672,9 +1673,9 @@ function createPostaDigit(number, color) {
   const material = new THREE.MeshStandardMaterial({
     color,
     emissive: color,
-    emissiveIntensity: 0.48,
-    metalness: 0.42,
-    roughness: 0.24
+    emissiveIntensity: 0.82,
+    metalness: 0.28,
+    roughness: 0.18
   });
   const segmentTransforms = {
     a: [0, 0, 10, 10, 2.4, 2],
@@ -1699,8 +1700,8 @@ function createPostaDigit(number, color) {
   });
 
   const halo = new THREE.Mesh(
-    new THREE.TorusGeometry(8.2, 0.65, 10, 32),
-    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.52, depthWrite: false })
+    new THREE.TorusGeometry(10.8, 1.15, 12, 40),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.82, depthWrite: false })
   );
   halo.position.z = -12;
   halo.frustumCulled = false;
@@ -1726,8 +1727,10 @@ function makePostaNumbersLayer() {
       light.position.set(-20, -30, 60);
       scene.add(light);
       numberGroups = STOPS.map((stop, index) => {
-        const group = createPostaDigit(stop.markerLabel || stop.id, POSTA_COLORS[index]);
+        const markerLabel = stopMarkerLabel(stop, index);
+        const group = createPostaDigit(markerLabel, POSTA_COLORS[index]);
         group.userData.postaIndex = index;
+        group.userData.markerLabel = markerLabel;
         scene.add(group);
         return group;
       });
@@ -1755,7 +1758,7 @@ function makePostaNumbersLayer() {
         );
         const units = coordinate.meterInMercatorCoordinateUnits();
         group.position.set(coordinate.x, coordinate.y, coordinate.z);
-        group.scale.setScalar(units * 2.25);
+        group.scale.setScalar(units * 3.2);
         group.rotation.z = faceCamera + Math.sin(now / 1100 + index) * 0.06;
       });
       camera.projectionMatrix.copy(projection);

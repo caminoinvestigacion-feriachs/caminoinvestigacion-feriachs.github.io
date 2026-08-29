@@ -57,6 +57,13 @@ test('las postas tienen identificadores y datos válidos', () => {
   assert.ok(CRUISE_ALTITUDE > 0 && CRUISE_ALTITUDE <= 300);
 });
 
+test('los globos siguen la secuencia pedagógica actual del recorrido', () => {
+  assert.deepEqual(
+    STOPS.map(stop => stop.markerLabel),
+    ['1', '2', '3', '4', '5', 'A', 'B', '6', '7']
+  );
+});
+
 test('las etapas 6 y 7 se presentan como Paradas A y B', () => {
   const paradaA = STOPS.find(stop => stop.stageLabel === 'PARADA A');
   const paradaB = STOPS.find(stop => stop.stageLabel === 'PARADA B');
