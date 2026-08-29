@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const journeyAudioToggle = document.getElementById('journey-audio-toggle');
     const journeyAudioVolume = document.getElementById('journey-audio-volume');
-    const busMovementAudio = new Audio('assets/audio/mixkit-train-passenger-passing-by-rattle-1636.wav');
+    const busMovementAudio = new Audio('assets/audio/mixkit-tractor-driving-away-1599.wav');
     const trainMovementAudio = new Audio('assets/audio/mixkit-steam-train-passing-1630.wav');
     const busArrivalAudio = new Audio('assets/audio/mixkit-hydraulic-bus-door-2709.wav');
     const trainArrivalAudio = new Audio('assets/audio/mixkit-steam-train-passing-1630.wav');
@@ -2729,14 +2729,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (_it) _it.classList.remove('visible');
                     if (mode === 'street' || mode === 'train') {
                         setVehiclePlayback(mode, false);
-                        if (!arrivalSoundStarted) playVehicleArrivalSound(mode);
+                        if (mode === 'train') {
+                            stopAudio(trainArrivalAudio, true);
+                        } else if (!arrivalSoundStarted) {
+                            playVehicleArrivalSound(mode);
+                        }
                     }
                     resolve();
                     return;
                 }
                 
                 const progress = frame / totalFrames;
-                const arrivalThreshold = mode === 'train' ? 0.76 : 0.93;
+                const arrivalThreshold = mode === 'train'
+                    ? Math.max(0.72, 1 - 1.15 / clampedSecs)
+                    : 0.93;
                 if (!arrivalSoundStarted && (mode === 'street' || mode === 'train') && progress >= arrivalThreshold) {
                     arrivalSoundStarted = true;
                     playVehicleArrivalSound(mode);
