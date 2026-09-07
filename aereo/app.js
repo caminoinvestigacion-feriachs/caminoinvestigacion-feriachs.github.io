@@ -1711,6 +1711,10 @@ map.on('load', () => {
   LANDMARKS.forEach(landmark => {
     map.addLayer(makeLandmarkLayer(landmark), firstLabel?.id);
   });
+  map.addLayer(TDALandmark.createLayer({
+    THREE, GLTFLoader, maplibregl,
+    modelUrl: '../assets/models/tda/tda-exterior.glb'
+  }), firstLabel?.id);
   map.addLayer(makePostaNumbersLayer());
   map.addLayer(makeAirshipLayer());
 });

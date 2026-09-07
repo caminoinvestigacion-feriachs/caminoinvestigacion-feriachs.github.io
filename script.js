@@ -1635,6 +1635,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ].forEach(layerId => {
             if (map.getLayer(layerId)) map.moveLayer(layerId);
         });
+        // Keep locality tint below the building's original facade materials.
+        if (map.getLayer('tda-building-3d')) map.moveLayer('tda-building-3d');
     }
 
     function setMediaPlayback(media, playing) {
@@ -2162,6 +2164,16 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshExpiredTiles: false
     });
     window.map = map;
+    // Restore the independent TDA layer after any fallback style replacement.
+    map.on('style.load', () => {
+        if (!map.getLayer('tda-building-3d')) {
+            map.addLayer(TDALandmark.createLayer({
+                THREE, GLTFLoader: THREE.GLTFLoader, maplibregl,
+                modelUrl: 'assets/models/tda/tda-exterior.glb'
+            }));
+        }
+    });
+
 
     // Fallback: if map.on('load') still hasn't fired after 2s, force a style reload.
     // NOTE: after setStyle() rebuilds the style, the GeoJSON worker needs a brief moment

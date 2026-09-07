@@ -1,0 +1,26 @@
+{
+  "name": "TDA — Torre de Desarrollo Académico, UNSAM",
+  "units": "metres",
+  "axis": "Y_UP",
+  "longitude": -58.52266,
+  "latitude": -34.580054,
+  "heading_degrees": 0,
+  "geolocation_status": "Provided map pin; building centre and rotation not surveyed. Heading 0 is a placeholder.",
+  "dimensions_estimated_m": {
+    "width": 31.1,
+    "depth": 31.1,
+    "height": 16.0075
+  },
+  "method": "Interpretive exterior reconstruction from 3 low-resolution photographs. Equal sides requested by user. No interiors.",
+  "assumptions": [
+    "Footprint 31.1 m square is an estimate, loosely informed by published total 4837 m2 / five levels; not a measured footprint.",
+    "Window count, offsets, ground-floor openings, roof and hidden sides are approximations.",
+    "Ground floor and 3 upper floors. Basement omitted because exterior only."
+  ],
+  "sources": [
+    "https://maps.app.goo.gl/eJYmeKmRkv1kz3VZ7",
+    "https://noticias.unsam.edu.ar/2020/09/17/convenio-para-la-construccion-de-la-torre-de-laboratorios-e-investigacion/"
+  ],
+  "triangles": 50212,
+  "materials": 11
+}
