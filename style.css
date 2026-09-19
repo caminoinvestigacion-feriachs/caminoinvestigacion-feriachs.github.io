@@ -1264,19 +1264,20 @@ body.posta-modal-open .inter-posta-text { display: none !important; }
     top: 50%;
     left: max(12px, env(safe-area-inset-left, 0px));
     z-index: 10020;
-    display: grid;
-    width: 48px;
-    justify-items: center;
-    gap: 7px;
+    display: flex;
+    width: 176px;
+    align-items: center;
+    gap: 10px;
     transform: translateY(-50%);
     border: 1px solid rgba(0,255,255,.72);
     border-radius: 16px;
-    padding: 9px 7px;
+    padding: 8px 10px;
     background: rgba(2,14,24,.84);
     box-shadow: 0 0 18px rgba(0,255,255,.3);
     backdrop-filter: blur(8px);
 }
 .journey-audio-control button {
+    flex: 0 0 36px;
     width: 36px;
     height: 36px;
     border: 1px solid #0ff;
@@ -1287,18 +1288,23 @@ body.posta-modal-open .inter-posta-text { display: none !important; }
     cursor: pointer;
 }
 .journey-audio-control label {
-    font: 700 9px 'Faustina', sans-serif;
-    letter-spacing: .08em;
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
 .journey-audio-control input {
-    width: 82px;
-    height: 18px;
-    transform: rotate(-90deg);
-    margin: 32px 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 24px;
+    margin: 0;
     accent-color: #00eaff;
     cursor: pointer;
+}
+@media (max-width: 600px) {
+    .journey-audio-control { width: 146px; padding: 6px 8px; }
 }
 body.posta-modal-open .journey-audio-control { display: none !important; }
 
