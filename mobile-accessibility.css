@@ -379,7 +379,7 @@ button:focus-visible,
         top: auto !important;
         left: auto !important;
         right: calc(8px + var(--safe-right)) !important;
-        bottom: calc(88px + var(--safe-bottom)) !important;
+        bottom: calc(110px + var(--safe-bottom)) !important;
         width: 165px !important;
         display: flex !important;
         flex-direction: column !important;
@@ -486,6 +486,9 @@ button:focus-visible,
 }
 
 /* En retrato se reserva una zona para cada capa de la interfaz. */
+@media (max-width: 360px) and (orientation: portrait) {
+    #screen-3 .hud-title { width: 38vw; }
+}
 @media (max-width: 767px) and (orientation: portrait) {
     body:has(#screen-1.active) .journey-audio-control,
     body:has(#screen-2.active) .journey-audio-control {
@@ -496,7 +499,7 @@ button:focus-visible,
     #screen-1 .cover-image { object-fit: contain; }
 
     #screen-3 #dest-ui { display: none !important; }
-    #screen-3 .destination-ui {
+    body:has(#screen-3.active) .destination-ui {
         top: calc(165px + var(--safe-top));
         right: 10px;
         left: 10px;
@@ -531,12 +534,12 @@ button:focus-visible,
 
     #screen-3 .map-nav {
         right: calc(8px + var(--safe-right)) !important;
-        bottom: calc(88px + var(--safe-bottom)) !important;
+        bottom: calc(110px + var(--safe-bottom)) !important;
         width: min(146px, 39vw) !important;
     }
     #screen-3 .restart-trigger-btn {
         right: calc(8px + var(--safe-right));
-        bottom: calc(248px + var(--safe-bottom));
+        bottom: calc(270px + var(--safe-bottom));
         width: min(146px, 39vw);
         padding: 8px;
         font-size: 13px;

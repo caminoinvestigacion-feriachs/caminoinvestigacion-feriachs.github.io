@@ -139,7 +139,7 @@ test('las etapas usan los títulos de sus materiales', () => {
     'Objetivos',
     'Hipótesis',
     'Antecedentes',
-    'Metodología',
+    'Metodologías y microrrelatos',
     'Conclusiones'
   ]);
 });

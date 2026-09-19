@@ -1,0 +1,28 @@
+/* El visor especial comparte la misma lectura en ambos recorridos. */
+.six-reader { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; gap: 8px; color: #fff; }
+.six-form-link { color: #87f5ff; padding: 6px; text-align: center; flex: none; }
+body:has(#embedded-modal:not(.hidden)) #screen-3 .map-nav,
+body:has(#embedded-modal:not(.hidden)) .restart-trigger-btn { visibility: hidden !important; pointer-events: none !important; }
+.six-tabs { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 8px; flex: none; }
+.six-tabs button { min-height: 56px; padding: 10px 12px; border: 2px solid #7393a5; border-radius: 9px; background: #152837; color: #fff; font: 700 clamp(15px, 1.8vw, 21px)/1.18 'Faustina', serif; cursor: pointer; }
+.six-tabs button[aria-selected='true'] { background: #18556a; border-color: #87f5ff; box-shadow: inset 0 -4px #87f5ff; }
+.six-toolbar { display: flex; align-items: center; gap: 6px; flex: none; }
+.six-toolbar button { min-width: 40px; min-height: 40px; padding: 5px 8px; border: 1px solid #8db5c7; border-radius: 7px; background: #163443; color: #fff; font: 700 18px 'Faustina', serif; cursor: pointer; }
+.six-toolbar button:disabled { opacity: .35; cursor: default; }
+.six-page-count { min-width: 46px; margin-right: auto; text-align: center; font-size: 15px; }
+.six-page-scroll { flex: 1; min-height: 0; overflow: auto; background: #070c13; overscroll-behavior: contain; touch-action: pan-x pan-y pinch-zoom; }
+.six-page { display: block; height: auto; max-width: none !important; margin: 0 auto; }
+#embedded-modal[data-posta-six] #modal-title { position: static; max-width: calc(100% - 62px); flex: none; order: 0; margin: 0 !important; padding: 6px; }
+#embedded-modal[data-posta-six] .posta-pdf-download { position: static; flex: none; align-self: flex-start; order: 1; margin: 5px 0 8px; }
+#embedded-modal[data-posta-six] #modal-body { height: auto; order: 2; overflow: hidden; }
+.material-panel[data-posta-six] h2 { position: static; max-width: calc(100% - 170px); flex: none; order: 0; font-size: clamp(16px, 2vw, 26px); }
+.material-panel[data-posta-six] .material-download { position: static; flex: none; align-self: flex-start; order: 1; margin: 5px 0 8px; }
+.material-panel[data-posta-six] .material-body { height: auto; order: 2; }
+@media (max-width: 620px) {
+  .six-reader { gap: 5px; }
+  .six-tabs { gap: 5px; }
+  .six-tabs button { padding: 8px 6px; }
+  .six-toolbar { gap: 4px; }
+  .six-toolbar button { min-width: 34px; padding: 5px; }
+  .material-panel[data-posta-six] h2 { max-width: calc(100% - 150px); letter-spacing: 0; }
+}

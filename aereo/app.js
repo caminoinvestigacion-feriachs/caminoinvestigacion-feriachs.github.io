@@ -8,7 +8,7 @@ import {
   DEPARTURE_PATH,
   DEPARTURE_SECONDS,
   LANDMARKS
-} from './route.js?v=4';
+} from './route.js?v=5';
 
 const AIRSHIP_BASE_SCALE = 16.8;
 const FLIGHT_SPEED_MULTIPLIER = 1.56;
@@ -636,10 +636,16 @@ function renderPostaSlide() {
 
 function renderMaterial(index) {
   const stop = STOPS[index];
+  materialBody.closest('.material-panel').toggleAttribute('data-posta-six', index === 7);
   materialTitle.textContent = `${stopLabel(stop)} · ${stop.title.toUpperCase()}`;
   materialDownloadLink.href = POSTA_PDFS.get(index) || '#';
   materialDownloadLink.download = POSTA_PDFS.get(index)?.split('/').at(-1) || 'material.pdf';
   materialDownloadLink.hidden = !POSTA_PDFS.has(index);
+  materialDownloadLink.textContent = '⇩ DESCARGAR PDF';
+  if (index === 7) {
+    window.PostaSixReader.mount(materialBody, materialDownloadLink, POSTA_SLIDES.get(index), POSTA_PDFS.get(index));
+    return;
+  }
   if (POSTA_SLIDES.has(index)) {
     materialSlideIndex = 0;
     renderPostaSlide();
@@ -689,6 +695,10 @@ function closeMaterial() {
 }
 
 function stepMaterialSlide(direction) {
+  if (currentStopIndex === 7 && materialOverlay.classList.contains('open')) {
+    window.PostaSixReader.step(materialBody, direction);
+    return;
+  }
   const slides = POSTA_SLIDES.get(currentStopIndex);
   if (!slides?.length || !materialOverlay.classList.contains('open')) return;
   materialSlideIndex = Math.max(
@@ -957,14 +967,67 @@ function interpolateDeparture(a, b, progress, phase) {
   };
 }
 
+const mobileCameraFrame = { zoom: 0, x: 0, y: 0, measuredAt: 0, pending: false };
+window.addEventListener('resize', () => {
+  mobileCameraFrame.zoom = mobileCameraFrame.x = mobileCameraFrame.y = 0;
+  mobileCameraFrame.measuredAt = 0;
+  if (usesMobileFraming() && mapReady) requestAnimationFrame(() => cameraFollow(planeState));
+});
+function usesMobileFraming() {
+  return document.documentElement.dataset.experienceMode !== 'desktop'
+    && window.matchMedia('(max-width: 932px)').matches;
+}
+
+// Measure the actual projected model: no changes to its scale or proportions.
+function fitAirshipInMobileViewport(airship, projection) {
+  if (!usesMobileFraming() || map.isMoving() || performance.now() - mobileCameraFrame.measuredAt < 160) return;
+  mobileCameraFrame.measuredAt = performance.now();
+  const box = new THREE.Box3().setFromObject(airship);
+  const points = [];
+  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) {
+    const p = new THREE.Vector3(x, y, z).applyMatrix4(projection);
+    points.push([(p.x + 1) * innerWidth / 2, (1 - p.y) * innerHeight / 2]);
+  }
+  const xs = points.map(p => p[0]), ys = points.map(p => p[1]);
+  const bounds = { left: Math.min(...xs), right: Math.max(...xs), top: Math.min(...ys), bottom: Math.max(...ys) };
+  if (!Object.values(bounds).every(Number.isFinite)) return;
+  let top = 80, bottom = innerHeight - 110, left = 14, right = innerWidth - 14;
+  for (const selector of ['.hud', '.top-tools']) {
+    const r = document.querySelector(selector)?.getBoundingClientRect();
+    if (r) top = Math.max(top, r.bottom + 14);
+  }
+  const controls = document.querySelector('.controls')?.getBoundingClientRect();
+  if (innerWidth > innerHeight) {
+    const nav = document.querySelector('.route-nav')?.getBoundingClientRect();
+    if (nav) bottom = nav.top - 12;
+    if (controls) right = controls.left - 12;
+  } else if (controls && controls.top > top + 90) bottom = Math.min(bottom, controls.top - 14);
+  const audio = document.querySelector('.journey-audio-control')?.getBoundingClientRect();
+  if (audio && audio.bottom > top && audio.top < bottom) left = audio.right + 12;
+  const ratio = Math.min((right - left) / (bounds.right - bounds.left), Math.max(90, bottom - top) / (bounds.bottom - bounds.top)) * .9;
+  const zoomChange = Math.max(-.25, Math.min(.25, Math.log2(ratio)));
+  const dx = (bounds.left + bounds.right - left - right) / 2;
+  const dy = (bounds.top + bounds.bottom - top - bottom) / 2;
+  if (Math.abs(zoomChange) < .035 && Math.abs(dx) + Math.abs(dy) < 3) return;
+  mobileCameraFrame.zoom = Math.max(-3.5, Math.min(.5, mobileCameraFrame.zoom + zoomChange));
+  mobileCameraFrame.x += dx;
+  mobileCameraFrame.y += dy;
+  if (!mobileCameraFrame.pending) {
+    mobileCameraFrame.pending = true;
+    requestAnimationFrame(() => {
+      mobileCameraFrame.pending = false;
+      cameraFollow(planeState);
+    });
+  }
+}
+
 function thirdPersonView(position) {
   const viewBearing = position.bearing + cameraOrbit.azimuth;
   const radians = viewBearing * Math.PI / 180;
-  const compactPortrait = window.matchMedia('(max-width: 620px) and (orientation: portrait)').matches;
   const distance = flightStage === 'departure'
     ? 0.00038
     : position.alt < 120 ? 0.00062 : 0.00078;
-  const framingDistance = compactPortrait ? distance * 0.58 : distance;
+  const framingDistance = distance;
   const center = [
     position.lng + Math.sin(radians) * framingDistance,
     position.lat + Math.cos(radians) * framingDistance
@@ -973,7 +1036,7 @@ function thirdPersonView(position) {
   return {
     center,
     zoom: (flightStage === 'departure' ? 16.4 : position.alt < 120 ? 16.2 : 15.95)
-      + cameraOrbit.zoomOffset - (compactPortrait ? 0.85 : 0),
+      + cameraOrbit.zoomOffset + (usesMobileFraming() ? mobileCameraFrame.zoom : 0),
     pitch: Math.max(22, Math.min(76,
       (flightStage === 'departure' ? 58 : 56) + cameraOrbit.pitchOffset
     )),
@@ -983,6 +1046,7 @@ function thirdPersonView(position) {
 
 function cameraFollow(position) {
   map.jumpTo(thirdPersonView(position));
+  if (usesMobileFraming()) map.panBy([mobileCameraFrame.x, mobileCameraFrame.y], { duration: 0 });
 }
 
 function bindCameraOrbitControls() {
@@ -2254,6 +2318,7 @@ function makeAirshipLayer() {
       camera.projectionMatrix = projection.multiply(local).multiply(rotation).multiply(bank).multiply(pitch);
       renderer.resetState();
       renderer.render(scene, camera);
+      if (!impactActive) fitAirshipInMobileViewport(airship, camera.projectionMatrix);
       map.triggerRepaint();
     }
   };

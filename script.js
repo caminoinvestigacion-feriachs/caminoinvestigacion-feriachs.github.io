@@ -1770,6 +1770,85 @@ document.addEventListener('DOMContentLoaded', () => {
         return marker;
     }
 
+    // Frame the complete map scene, not the vehicle independently. Native vehicle
+    // dimensions, wheel positions, marker anchors and track registration stay intact.
+    function installResponsiveSceneFraming() {
+        const canvas = map.getContainer();
+        let sceneScale = 1, scheduled = false, lastFrame = 0;
+        const visibleRect = selector => {
+            const element = document.querySelector(selector);
+            if (!element || !element.getClientRects().length || getComputedStyle(element).visibility === 'hidden') return null;
+            return element.getBoundingClientRect();
+        };
+        function fit() {
+            scheduled = false;
+            lastFrame = performance.now();
+            if (map.isMoving()) return;
+            const mobile = new URLSearchParams(location.search).get('device') !== 'desktop'
+                && matchMedia('(max-width: 932px)').matches;
+            if (!mobile) {
+                const audioControl = document.querySelector('.journey-audio-control');
+                audioControl?.style.removeProperty('top');
+                audioControl?.style.removeProperty('transform');
+                if (sceneScale !== 1) {
+                    sceneScale = 1;
+                    ['width', 'height', 'transform', 'transform-origin', 'position', 'left', 'top'].forEach(key => canvas.style.removeProperty(key));
+                    map.resize();
+                }
+                return;
+            }
+            const media = pinwheelDiv.querySelector('.bus-image, .train-media-target');
+            if (!media || !media.getClientRects().length || !document.querySelector('#screen-3.active')) return;
+            const w = innerWidth, h = innerHeight;
+            let top = 70, bottom = h - 96, left = 12, right = w - 12;
+            ['.hud-title', '.hud-timer', '.destination-ui', '.posta-screen.visible'].forEach(selector => {
+                const r = visibleRect(selector);
+                if (r && r.bottom < h * .66) top = Math.max(top, r.bottom + 12);
+            });
+            ['.map-nav', '.restart-trigger-btn:not(.hidden)'].forEach(selector => {
+                const r = visibleRect(selector);
+                if (r && r.top > top + 70) bottom = Math.min(bottom, r.top - 12);
+            });
+            const audioControl = document.querySelector('.journey-audio-control');
+            const card = visibleRect('.posta-screen.visible');
+            if (audioControl && w < h) {
+                const audioTop = Math.min(h - 108 - audioControl.offsetHeight,
+                    Math.max(h / 2 - audioControl.offsetHeight / 2, (card?.bottom || 0) + 8));
+                audioControl.style.top = `${audioTop}px`;
+                audioControl.style.transform = 'none';
+            }
+            const audio = visibleRect('.journey-audio-control');
+            if (audio && audio.bottom > top && audio.top < bottom) left = audio.right + 10;
+            const native = media.getBoundingClientRect();
+            if (!native.width || !native.height) return;
+            const availableW = Math.max(120, right - left), availableH = Math.max(90, bottom - top);
+            const scale = Math.min(1, availableW / (native.width / sceneScale), availableH / (native.height / sceneScale));
+            if (Math.abs(scale - sceneScale) > .005 || Math.abs(canvas.clientWidth - w / scale) > 1 || Math.abs(canvas.clientHeight - h / scale) > 1) {
+                sceneScale = scale;
+                canvas.style.position = 'absolute';
+                canvas.style.left = '0';
+                canvas.style.top = '0';
+                canvas.style.width = `${w / scale}px`;
+                canvas.style.height = `${h / scale}px`;
+                canvas.style.transformOrigin = '0 0';
+                canvas.style.transform = `scale(${scale})`;
+                map.resize();
+            }
+            const rect = media.getBoundingClientRect();
+            const dx = ((rect.left + rect.right) / 2 - (left + right) / 2) / sceneScale;
+            const dy = ((rect.top + rect.bottom) / 2 - (top + bottom) / 2) / sceneScale;
+            if (Math.abs(dx) + Math.abs(dy) > 1.5) map.panBy([dx, dy], { duration: 0 });
+        }
+        function schedule() {
+            if (scheduled || performance.now() - lastFrame < 100) return;
+            scheduled = true;
+            requestAnimationFrame(fit);
+        }
+        map.on('render', schedule);
+        window.addEventListener('resize', () => { lastFrame = 0; schedule(); });
+        new ResizeObserver(() => { lastFrame = 0; schedule(); }).observe(document.getElementById('screen-3'));
+    }
+
     function showBusVehicle(coord, pauseAtStop = false) {
         if (!pinwheelDiv) return;
         clearFloatingTrainMarkers();
@@ -1778,13 +1857,8 @@ document.addEventListener('DOMContentLoaded', () => {
         smoke.className = 'smoke-effect';
         const bus = createLoopingVideo('colectivo_animado.webm', 'COLECTIVO FERIA-anverso.png', 'bus-image');
         const busConf = getBusConfig();
-        const compactVehicle = window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
-        bus.style.width = (compactVehicle ? Math.min(busConf.size, window.innerWidth * 0.68) : busConf.size) + 'px';
-        bus.style.transform = compactVehicle
-            ? `translateY(-40%) rotate(${busConf.rot}deg)`
-            : `translateY(-85%) rotate(${busConf.rot}deg)`;
-        bus.style.position = compactVehicle ? 'relative' : '';
-        pinwheelDiv.style.transform = compactVehicle ? 'none' : '';
+        bus.style.width = busConf.size + 'px';
+        bus.style.transform = `translateY(-85%) rotate(${busConf.rot}deg)`;
         pinwheelDiv.appendChild(smoke);
         pinwheelDiv.appendChild(bus);
         pinwheelDiv.style.display = 'block';
@@ -1802,15 +1876,11 @@ document.addEventListener('DOMContentLoaded', () => {
         clearFloatingTrainMarkers();
         pinwheelDiv.innerHTML = '';
         const conf = getTrainConfig();
-        const compactVehicle = window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
         const trainContainer = document.createElement('div');
         trainContainer.className = 'train-container';
         trainContainer.style.position = 'relative';
-        trainContainer.style.width = (compactVehicle ? Math.min(conf.size, window.innerWidth * 0.72) : conf.size) + 'px';
-        trainContainer.style.transform = compactVehicle
-            ? `translateY(-5%) rotate(${conf.rot}deg)`
-            : `translateY(-40%) rotate(${conf.rot}deg)`;
-        pinwheelDiv.style.transform = compactVehicle ? 'none' : '';
+        trainContainer.style.width = conf.size + 'px';
+        trainContainer.style.transform = `translateY(-40%) rotate(${conf.rot}deg)`;
         const img = createLoopingVideo('tren_animado.webm', 'tren_transparente.png', 'train-media-target');
         img.style.width = '100%';
         img.style.height = 'auto';
@@ -2014,6 +2084,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!modal || !title || !body) return;
         title.innerText = postasText[index] || 'Información de Posta';
         modal.dataset.postaIndex = String(index);
+        modal.toggleAttribute('data-posta-six', index === 7);
         let downloadLink = modal.querySelector('.posta-pdf-download');
         if (!downloadLink) {
             downloadLink = document.createElement('a');
@@ -2025,7 +2096,11 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadLink.href = postaPdfs[index] || '#';
         downloadLink.download = postaPdfs[index]?.split('/').pop() || 'material.pdf';
         downloadLink.hidden = !postaPdfs[index];
-        if (postaSlides[index]?.length) {
+        downloadLink.textContent = '⇩ DESCARGAR PDF';
+        if (index === 7) {
+            activeMaterialPostaIndex = index;
+            window.PostaSixReader.mount(body, downloadLink, postaSlides[index], postaPdfs[index]);
+        } else if (postaSlides[index]?.length) {
             activeMaterialPostaIndex = index;
             materialSlideIndex = 0;
             renderPostaSlide();
@@ -2040,6 +2115,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function stepPostaSlide(direction) {
         const modal = document.getElementById('embedded-modal');
+        if (activeMaterialPostaIndex === 7 && modal && !modal.classList.contains('hidden')) {
+            window.PostaSixReader.step(document.getElementById('modal-body'), direction);
+            return true;
+        }
         const slides = postaSlides[activeMaterialPostaIndex];
         if (!modal || modal.classList.contains('hidden') || !slides?.length) return false;
         materialSlideIndex = Math.max(0, Math.min(slides.length - 1, materialSlideIndex + direction));
@@ -2065,7 +2144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Posta 5: Objetivos",
         "Parada A: Hipótesis",
         "Parada B: Antecedentes",
-        "Posta 6: Metodología",
+        "Posta 6: Metodologías y microrrelatos",
         "Posta 7: Conclusiones"
     ];
     const terrestrialRouteNav = document.getElementById('terrestrial-route-nav');
@@ -2418,6 +2497,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('screen-3')?.appendChild(postaScreenEl);
 
         mainPinwheelMarker = new maplibregl.Marker({ element: pinwheelDiv, anchor: 'center' }).setLngLat(p1Coord).addTo(map);
+        installResponsiveSceneFraming();
 
         // MapLibre v4 fuerza opacity:1 inline en el elemento del Marker (fade de oclusión
         // con terreno), lo que pisa nuestra clase CSS .posta1-gif{opacity:0} / .posta-label{opacity:0}.

@@ -6,7 +6,7 @@ export const STOPS = [
   {id:5,name:'San Andrés',title:'Objetivos',markerLabel:'5',label:'SOBREVUELO',lng:-58.54448,lat:-34.56521,alt:125,zoom:15.9},
   {id:6,name:'Villa Ballester',title:'Hipótesis',stageLabel:'PARADA A',markerLabel:'A',label:'SOBREVUELO',lng:-58.5580651,lat:-34.5492309,alt:135,zoom:15.8},
   {id:7,name:'Billinghurst',title:'Antecedentes',stageLabel:'PARADA B',markerLabel:'B',label:'SOBREVUELO',place:'Villa Billinghurst',lng:-58.5747487,lat:-34.5752034,alt:120,zoom:15.8},
-  {id:8,name:'Loma Hermosa',title:'Metodología',stageLabel:'POSTA 6',markerLabel:'6',label:'SOBREVUELO',lng:-58.5993659,lat:-34.5492367,alt:145,zoom:15.4},
+  {id:8,name:'Loma Hermosa',title:'Metodologías y microrrelatos',stageLabel:'POSTA 6',markerLabel:'6',label:'SOBREVUELO',lng:-58.5993659,lat:-34.5492367,alt:145,zoom:15.4},
   {id:9,name:'UNSAM',title:'Conclusiones',stageLabel:'POSTA 7',markerLabel:'7',place:'Campus Miguelete',lng:-58.5266950692,lat:-34.5798390695,alt:55,zoom:17.2}
 ];
 

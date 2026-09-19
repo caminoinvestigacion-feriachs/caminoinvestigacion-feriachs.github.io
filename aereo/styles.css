@@ -1560,3 +1560,26 @@ html[data-experience-mode='mobile'] .exit-free-mode {
   }
 }
 body:has(.material-overlay.open) .journey-audio-control { visibility: hidden; }
+@media (max-width: 932px) and (orientation: landscape) {
+  html[data-experience-mode='mobile'] .hud { top: 8px; left: 8px; width: 180px; padding: 8px; }
+  html[data-experience-mode='mobile'] .stop-name { font-size: 22px; }
+  html[data-experience-mode='mobile'] .stop-theme { font-size: 12px; }
+  html[data-experience-mode='mobile'] .stop-material-trigger small { font-size: 9px; }
+  html[data-experience-mode='mobile'] .fair-countdown { position: absolute; top: 0; left: 194px; width: 140px; padding: 5px; }
+  html[data-experience-mode='mobile'] .countdown-values strong { font-size: 20px; }
+  html[data-experience-mode='mobile'] .top-tools { top: 8px; right: 8px; gap: 5px; }
+  html[data-experience-mode='mobile'] .top-tools button { font-size: 9px; padding: 9px; min-height: 36px; min-width: 0; width: 110px; }
+  html[data-experience-mode='mobile'] .altimeter { min-width: 55px; padding: 6px; }
+  html[data-experience-mode='mobile'] .altimeter strong { font-size: 22px; }
+  html[data-experience-mode='mobile'] .controls { right: 8px; bottom: 82px; width: 155px; gap: 5px; }
+  html[data-experience-mode='mobile'] .journey-control-cluster { flex-direction: column; border-radius: 16px; padding: 4px; }
+  html[data-experience-mode='mobile'] .control-group { width: 100%; }
+  html[data-experience-mode='mobile'] .controls button { min-height: 32px; padding: 6px; font-size: 11px; }
+  html[data-experience-mode='mobile'] .flight-controls button { width: 100%; }
+  html[data-experience-mode='mobile'] .route-nav { bottom: 6px; height: 65px; padding: 5px; }
+  html[data-experience-mode='mobile'] .route-nav button { min-height: 52px; padding: 3px; }
+  html[data-experience-mode='mobile'] .route-nav button span { font-size: 16px; line-height: 1; }
+  html[data-experience-mode='mobile'] .route-nav button small { font-size: 10px; line-height: 1.05; }
+  html[data-experience-mode='mobile'] .status { display: none; }
+  html[data-experience-mode='mobile'] .journey-audio-control { width: 46px; height: 130px; }
+}
