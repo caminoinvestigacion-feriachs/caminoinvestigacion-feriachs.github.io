@@ -960,18 +960,20 @@ function interpolateDeparture(a, b, progress, phase) {
 function thirdPersonView(position) {
   const viewBearing = position.bearing + cameraOrbit.azimuth;
   const radians = viewBearing * Math.PI / 180;
+  const compactPortrait = window.matchMedia('(max-width: 620px) and (orientation: portrait)').matches;
   const distance = flightStage === 'departure'
     ? 0.00038
     : position.alt < 120 ? 0.00062 : 0.00078;
+  const framingDistance = compactPortrait ? distance * 0.58 : distance;
   const center = [
-    position.lng + Math.sin(radians) * distance,
-    position.lat + Math.cos(radians) * distance
+    position.lng + Math.sin(radians) * framingDistance,
+    position.lat + Math.cos(radians) * framingDistance
   ];
 
   return {
     center,
     zoom: (flightStage === 'departure' ? 16.4 : position.alt < 120 ? 16.2 : 15.95)
-      + cameraOrbit.zoomOffset,
+      + cameraOrbit.zoomOffset - (compactPortrait ? 0.85 : 0),
     pitch: Math.max(22, Math.min(76,
       (flightStage === 'departure' ? 58 : 56) + cameraOrbit.pitchOffset
     )),

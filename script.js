@@ -1778,8 +1778,13 @@ document.addEventListener('DOMContentLoaded', () => {
         smoke.className = 'smoke-effect';
         const bus = createLoopingVideo('colectivo_animado.webm', 'COLECTIVO FERIA-anverso.png', 'bus-image');
         const busConf = getBusConfig();
-        bus.style.width = busConf.size + 'px';
-        bus.style.transform = `translateY(-85%) rotate(${busConf.rot}deg)`;
+        const compactVehicle = window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
+        bus.style.width = (compactVehicle ? Math.min(busConf.size, window.innerWidth * 0.68) : busConf.size) + 'px';
+        bus.style.transform = compactVehicle
+            ? `translateY(-40%) rotate(${busConf.rot}deg)`
+            : `translateY(-85%) rotate(${busConf.rot}deg)`;
+        bus.style.position = compactVehicle ? 'relative' : '';
+        pinwheelDiv.style.transform = compactVehicle ? 'none' : '';
         pinwheelDiv.appendChild(smoke);
         pinwheelDiv.appendChild(bus);
         pinwheelDiv.style.display = 'block';
@@ -1797,11 +1802,15 @@ document.addEventListener('DOMContentLoaded', () => {
         clearFloatingTrainMarkers();
         pinwheelDiv.innerHTML = '';
         const conf = getTrainConfig();
+        const compactVehicle = window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
         const trainContainer = document.createElement('div');
         trainContainer.className = 'train-container';
         trainContainer.style.position = 'relative';
-        trainContainer.style.width = conf.size + 'px';
-        trainContainer.style.transform = `translateY(-40%) rotate(${conf.rot}deg)`;
+        trainContainer.style.width = (compactVehicle ? Math.min(conf.size, window.innerWidth * 0.72) : conf.size) + 'px';
+        trainContainer.style.transform = compactVehicle
+            ? `translateY(-5%) rotate(${conf.rot}deg)`
+            : `translateY(-40%) rotate(${conf.rot}deg)`;
+        pinwheelDiv.style.transform = compactVehicle ? 'none' : '';
         const img = createLoopingVideo('tren_animado.webm', 'tren_transparente.png', 'train-media-target');
         img.style.width = '100%';
         img.style.height = 'auto';
