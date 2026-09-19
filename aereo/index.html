@@ -95,6 +95,7 @@
     <label for="journeyAudioVolume">VOLUMEN</label>
     <input id="journeyAudioVolume" type="range" min="0" max="0.65" step="0.05" value="0.22" aria-label="Volumen de los sonidos del recorrido aéreo">
   </div>
+  <audio id="intro-music" src="../assets/audio/Noche_de_Tablado.mp3" preload="auto" autoplay loop></audio>
   <div id="status" class="status" role="status" aria-live="polite">Preparando aeronave…</div>
   <div id="postaImpact" class="posta-impact" aria-hidden="true">
     <div id="postaImpactParticles" class="posta-impact-particles" aria-hidden="true"></div>
@@ -147,6 +148,7 @@
     }
   </script>
   <script src="../assets/tda-landmark.js?v=1"></script>
-  <script type="module" src="app.js?v=34"></script>
+  <script src="../assets/intro-music.js?v=1"></script>
+  <script type="module" src="app.js?v=35"></script>
 </body>
 </html>

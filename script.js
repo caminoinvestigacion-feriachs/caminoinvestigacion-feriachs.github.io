@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function applyJourneySoundVolume() {
         const base = journeySoundMuted ? 0 : journeySoundVolume;
+        window.introMusic?.setVolume(journeySoundVolume, journeySoundMuted);
         busMovementAudio.volume = Math.min(1, base * 0.62);
         trainMovementAudio.volume = Math.min(1, base * 0.62);
         busArrivalAudio.volume = Math.min(1, base * 0.92);
@@ -3164,6 +3165,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { screen2.classList.remove('active');
                     screen3.classList.remove('under');
                     screen3.classList.add('active');
+                    window.introMusic?.stop();
                     map.resize();
                     map.fitBounds(sanMartinBounds, { padding: 70, maxZoom: 12.2, duration: 0 });
                     map.triggerRepaint();

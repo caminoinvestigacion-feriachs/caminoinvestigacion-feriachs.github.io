@@ -206,6 +206,7 @@ airshipImpactAudio.preload = 'auto';
 
 function applyJourneySoundVolume() {
   const base = journeySoundMuted ? 0 : journeySoundVolume;
+  window.introMusic?.setVolume(journeySoundVolume, journeySoundMuted);
   airshipMovementAudio.volume = Math.min(1, base * 0.58);
   airshipImpactAudio.volume = Math.min(1, base * 1.75);
   journeyAudioToggle.textContent = base === 0 ? '🔇' : '🔊';
@@ -426,6 +427,7 @@ function finishExperienceSetup(mode) {
 function enterAerialExperience() {
   journeyIntro.hidden = true;
   journeyIntro.setAttribute('aria-hidden', 'true');
+  window.introMusic?.stop();
   window.requestAnimationFrame(() => {
     map.resize();
     startBtn.focus();

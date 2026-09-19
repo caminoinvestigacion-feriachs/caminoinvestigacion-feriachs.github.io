@@ -320,7 +320,7 @@
     <label for="music-volume">Volumen</label>
     <input id="music-volume" class="music-volume" type="range" min="0" max="1" step="0.05" value="0.35" aria-label="Volumen de la música">
   </div>
-  <audio id="portal-music" src="assets/audio/Noche_de_Tablado.mp3" preload="auto" loop></audio>
+  <audio id="portal-music" src="assets/audio/Noche_de_Tablado.mp3" preload="auto" autoplay loop></audio>
   <div class="loading" id="loading" role="status">Preparando la portada…</div>
   <script>
     (() => {
@@ -337,22 +337,47 @@
       const versionLinks = [...document.querySelectorAll('[data-device]')];
       let selectedVersionLink = null;
       let previousVolume = 0.35;
+      const musicStorageKey = 'comocreamos-intro-music';
+      let savedMusic = null;
+      try { savedMusic = JSON.parse(sessionStorage.getItem(musicStorageKey) || 'null'); } catch (_) {}
+      if (Number.isFinite(savedMusic?.volume)) previousVolume = savedMusic.volume;
 
       portalMusic.volume = previousVolume;
+      portalMusic.muted = Boolean(savedMusic?.muted);
+      musicVolume.value = String(previousVolume);
+      if (Number.isFinite(savedMusic?.time) && savedMusic.time > 0) {
+        portalMusic.addEventListener('loadedmetadata', () => {
+          portalMusic.currentTime = savedMusic.time % (portalMusic.duration || Infinity);
+        }, { once: true });
+      }
+      const saveMusic = () => {
+        try {
+          sessionStorage.setItem(musicStorageKey, JSON.stringify({
+            time: portalMusic.currentTime,
+            volume: portalMusic.volume,
+            muted: portalMusic.muted
+          }));
+        } catch (_) {}
+      };
+      window.addEventListener('pagehide', saveMusic);
       const updateMusicControl = () => {
         const muted = portalMusic.muted || portalMusic.volume === 0;
-        musicToggle.textContent = muted ? '🔇' : '🔊';
+        musicToggle.textContent = muted ? '🔇' : portalMusic.paused ? '▶' : '🔊';
         musicToggle.setAttribute('aria-pressed', String(muted));
-        musicToggle.setAttribute('aria-label', muted ? 'Activar música' : 'Silenciar música');
+        musicToggle.setAttribute('aria-label', muted ? 'Activar música' : portalMusic.paused ? 'Reproducir música' : 'Silenciar música');
       };
-      const tryPlayMusic = () => portalMusic.play().catch(() => {});
-      const unlockMusic = () => {
-        tryPlayMusic();
-        document.removeEventListener('pointerdown', unlockMusic);
-        document.removeEventListener('keydown', unlockMusic);
+      const tryPlayMusic = () => portalMusic.play().then(updateMusicControl).catch(updateMusicControl);
+      const unlockMusic = event => {
+        if (event.target === musicToggle) return;
+        tryPlayMusic().then(() => {
+          if (portalMusic.paused) return;
+          document.removeEventListener('pointerdown', unlockMusic);
+          document.removeEventListener('keydown', unlockMusic);
+        });
       };
       document.addEventListener('pointerdown', unlockMusic);
       document.addEventListener('keydown', unlockMusic);
+      portalMusic.addEventListener('playing', updateMusicControl);
       tryPlayMusic();
 
       musicToggle.addEventListener('click', () => {
@@ -382,7 +407,7 @@
         updateMusicControl();
       });
 
-      [terrestrialOption, aerialOption].forEach(option => option.addEventListener('click', () => portalMusic.pause()));
+      [terrestrialOption, aerialOption].forEach(option => option.addEventListener('click', saveMusic));
 
       const showTransportChoice = (device, sourceLink) => {
         selectedVersionLink = sourceLink;
