@@ -194,13 +194,13 @@ test('la portada permite elegir dispositivo y adapta los controles al celular', 
   assert.match(source, /CONTINUAR AL RECORRIDO AÉREO/);
   assert.match(html, />VERSIÓN MÓVIL<\/button>/);
   assert.match(html, />ESCRITORIO PC<\/button>/);
-  assert.match(html, /posición horizontal para mejorar la experiencia/);
+  assert.doesNotMatch(html, /posición horizontal para mejorar la experiencia/);
   assert.match(source, /finishExperienceSetup\('desktop'\)/);
   assert.match(source, /finishExperienceSetup\('mobile'\)/);
   assert.match(source, /new URLSearchParams\(window\.location\.search\)\.get\('device'\)/);
   assert.match(source, /requestedExperienceMode === 'desktop'/);
   assert.match(source, /requestedExperienceMode === 'mobile'/);
-  assert.match(source, /showMobileOrientationPrompt\(\)/);
+  assert.doesNotMatch(source, /showMobileOrientationPrompt\(\)/);
   assert.match(source, /journeyIntro\.hidden = false/);
   assert.match(source, /function enterAerialExperience\(\)/);
   assert.match(source, /journeyIntro\.hidden = true/);

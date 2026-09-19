@@ -166,10 +166,8 @@ const celebration = $('#celebration');
 const confetti = $('#confetti');
 const experienceSetup = $('#experienceSetup');
 const modeChoice = $('#modeChoice');
-const orientationPrompt = $('#orientationPrompt');
 const mobileModeBtn = $('#mobileModeBtn');
 const desktopModeBtn = $('#desktopModeBtn');
-const continueMobileBtn = $('#continueMobileBtn');
 const journeyIntro = $('#journeyIntro');
 const journeyIntroBack = $('#journeyIntroBack');
 const journeyIntroContinue = $('#journeyIntroContinue');
@@ -465,17 +463,9 @@ function retreatJourneyIntro() {
   (journeyIntroStep === 0 ? journeyIntroContinue : journeyIntroPrevious).focus();
 }
 
-function showMobileOrientationPrompt() {
-  document.documentElement.dataset.experienceMode = 'mobile';
-  modeChoice.hidden = true;
-  orientationPrompt.hidden = false;
-  continueMobileBtn.focus();
-}
-
-mobileModeBtn.addEventListener('click', showMobileOrientationPrompt);
+mobileModeBtn.addEventListener('click', () => finishExperienceSetup('mobile'));
 
 desktopModeBtn.addEventListener('click', () => finishExperienceSetup('desktop'));
-continueMobileBtn.addEventListener('click', () => finishExperienceSetup('mobile'));
 journeyIntroContinue.addEventListener('click', advanceJourneyIntro);
 journeyIntroPrevious.addEventListener('click', retreatJourneyIntro);
 
@@ -483,7 +473,7 @@ const requestedExperienceMode = new URLSearchParams(window.location.search).get(
 if (requestedExperienceMode === 'desktop') {
   finishExperienceSetup('desktop');
 } else if (requestedExperienceMode === 'mobile') {
-  showMobileOrientationPrompt();
+  finishExperienceSetup('mobile');
 }
 
 function cancelAnimation() {

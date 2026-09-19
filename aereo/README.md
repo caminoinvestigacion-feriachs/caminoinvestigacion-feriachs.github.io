@@ -115,8 +115,8 @@ diferente al título, selector y marcador cartográfico. Los controles
 controla la reproducción del recorrido. La interfaz también
 permite alternar la experiencia en pantalla completa.
 
-Antes de comenzar se elige entre versión móvil y escritorio. La opción móvil
-muestra una recomendación para girar el teléfono. El botón único de vuelo
+Antes de comenzar se elige entre versión móvil y escritorio. Ambas opciones
+continúan directamente a la introducción. El botón único de vuelo
 cambia entre `INICIAR`, `PAUSA` y `CONTINUAR`, y la velocidad general es un 10 %
 mayor que en la versión anterior.
 

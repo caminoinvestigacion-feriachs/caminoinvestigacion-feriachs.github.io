@@ -1265,13 +1265,16 @@ body.posta-modal-open .inter-posta-text { display: none !important; }
     left: max(12px, env(safe-area-inset-left, 0px));
     z-index: 10020;
     display: flex;
-    width: 176px;
+    box-sizing: border-box;
+    width: 54px;
+    height: 160px;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     transform: translateY(-50%);
     border: 1px solid rgba(0,255,255,.72);
     border-radius: 16px;
-    padding: 8px 10px;
+    padding: 8px;
     background: rgba(2,14,24,.84);
     box-shadow: 0 0 18px rgba(0,255,255,.3);
     backdrop-filter: blur(8px);
@@ -1297,14 +1300,17 @@ body.posta-modal-open .inter-posta-text { display: none !important; }
 }
 .journey-audio-control input {
     flex: 1 1 auto;
-    min-width: 0;
-    height: 24px;
+    width: 24px;
+    min-width: 24px;
+    height: 100px;
     margin: 0;
+    writing-mode: vertical-lr;
+    direction: rtl;
     accent-color: #00eaff;
     cursor: pointer;
 }
 @media (max-width: 600px) {
-    .journey-audio-control { width: 146px; padding: 6px 8px; }
+    .journey-audio-control { left: max(8px, env(safe-area-inset-left, 0px)); width: 50px; height: 146px; padding: 6px; }
 }
 body.posta-modal-open .journey-audio-control { display: none !important; }
 

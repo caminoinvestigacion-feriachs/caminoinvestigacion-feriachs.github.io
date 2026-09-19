@@ -248,15 +248,20 @@
     }
     .music-control {
       position: fixed;
-      right: max(18px, env(safe-area-inset-right));
-      bottom: max(18px, env(safe-area-inset-bottom));
+      top: 50%;
+      left: max(12px, env(safe-area-inset-left, 0px));
       z-index: 20;
       display: flex;
+      box-sizing: border-box;
+      width: 54px;
+      height: 160px;
+      flex-direction: column;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
+      transform: translateY(-50%);
       border: 1px solid rgba(255,255,255,.76);
-      border-radius: 999px;
-      padding: 7px 11px 7px 7px;
+      border-radius: 16px;
+      padding: 8px;
       background: rgba(3,12,18,.86);
       box-shadow: 0 0 24px rgba(0,239,255,.28);
       backdrop-filter: blur(12px);
@@ -276,7 +281,7 @@
       font-size: 22px;
       cursor: pointer;
     }
-    .music-volume { width: 105px; accent-color: #00eaff; cursor: pointer; }
+    .music-volume { flex: 1 1 auto; width: 24px; min-width: 24px; height: 100px; margin: 0; writing-mode: vertical-lr; direction: rtl; accent-color: #00eaff; cursor: pointer; }
     .music-control label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
   </style>
 </head>
